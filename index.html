@@ -8,30 +8,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Assistant</title>
     <style>
+        :root {
+            --bg-primary: #FAFAFA;
+            --bg-secondary: white;
+            --bg-tertiary: #F5F5F5;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --accent-color: #6200EA;
+            --accent-dark: #3700B3;
+            --border-color: #E0E0E0;
+            --message-bg: #E0E0E0;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --bg-tertiary: #2D2D2D;
+            --text-primary: #FFFFFF;
+            --text-secondary: #AAAAAA;
+            --accent-color: #BB86FC;
+            --accent-dark: #9965F4;
+            --border-color: #3D3D3D;
+            --message-bg: #3D3D3D;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
         body {
             margin: 0;
             font-family: Roboto, sans-serif;
-            background-color: #FAFAFA; /* Light background */
-            color: #212121;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
         }
+
         .header {
-            background-color: #6200EA; /* Purple 500 */
+            background-color: var(--accent-color);
             color: white;
             padding: 16px;
             text-align: center;
             font-size: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
             max-width: 400px;
             margin: auto;
-            border: 1px solid #E0E0E0;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            background-color: white;
+            box-shadow: 0 2px 10px var(--shadow);
+            background-color: var(--bg-secondary);
         }
+
         .chatbox {
             flex: 1;
             padding: 16px;
@@ -40,69 +93,137 @@
             flex-direction: column;
             gap: 8px;
         }
+
         .chat-message {
             padding: 10px 15px;
             border-radius: 20px;
             max-width: 80%;
-            word-wrap: break-word; /* Ensure long words break */
-            animation: fadeIn 0.3s ease forwards; /* Apply fade-in animation */
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease forwards;
         }
+
         .user-message {
             align-self: flex-end;
-            background-color: #6200EA; /* Purple 500 */
+            background-color: var(--accent-color);
             color: white;
-            border-top-left-radius: 0;
+            border-top-right-radius: 5px;
         }
+
         .assistant-message {
             align-self: flex-start;
-            background-color: #E0E0E0; /* Light grey */
-            color: #212121;
-            border-top-right-radius: 0;
+            background-color: var(--message-bg);
+            color: var(--text-primary);
+            border-top-left-radius: 5px;
         }
+
+        .typing-indicator {
+            align-self: flex-start;
+            background-color: var(--message-bg);
+            border-radius: 20px;
+            border-top-left-radius: 5px;
+            padding: 15px 20px;
+            margin: 8px 0;
+            max-width: 80px;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+            animation: typingAnimation 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
         .input-area {
             padding: 10px;
-            border-top: 1px solid #E0E0E0;
-            background-color: #F5F5F5; /* Slightly darker grey */
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-tertiary);
             display: flex;
             align-items: center;
         }
+
         .input-area input {
             flex: 1;
             padding: 10px;
-            border: 1px solid #E0E0E0;
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             margin-right: 10px;
             transition: border-color 0.3s;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 16px;
         }
+
         .input-area input:focus {
             outline: none;
-            border-color: #6200EA; /* Purple 500 */
+            border-color: var(--accent-color);
         }
+
+        .input-area input::placeholder {
+            color: var(--text-secondary);
+        }
+
         .input-area button {
             padding: 10px 15px;
             border: none;
             border-radius: 20px;
-            background-color: #6200EA; /* Purple 500 */
+            background-color: var(--accent-color);
             color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
+            transition: background-color 0.3s ease;
         }
-        .input-area button:hover {
-            background-color: #3700B3; /* Darker Purple 700 */
+
+        .input-area button:hover:not(:disabled) {
+            background-color: var(--accent-dark);
         }
+
+        .input-area button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .input-area .material-icons {
             margin-right: 5px;
         }
+
         .spinner {
             display: none;
             border: 4px solid rgba(0, 0, 0, 0.1);
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            border-top-color: #6200EA; /* Purple 500 */
+            border-top-color: var(--accent-color);
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -111,6 +232,7 @@
                 transform: rotate(360deg);
             }
         }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -121,10 +243,34 @@
                 transform: translateY(0);
             }
         }
+
+        /* Scrollbar styling */
+        .chatbox::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbox::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chatbox::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .chatbox::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
-    <div class="header">Chat Assistant</div>
+    <div class="header">
+        <div></div>
+        <span>Chat Assistant</span>
+        <button class="theme-toggle" id="themeToggle">
+            <span class="material-icons">dark_mode</span>
+        </button>
+    </div>
     <div class="container">
         <div id="chatbox" class="chatbox"></div>
         <div class="input-area">
@@ -139,44 +285,111 @@
         const sendButton = document.getElementById("sendButton");
         const chatInput = document.getElementById('chatInput');
         const chatbox = document.getElementById('chatbox');
+        const themeToggle = document.getElementById('themeToggle');
+        let typingIndicator = null;
+
+        // Theme Management
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('.material-icons');
+            icon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+        }
+
+        // Auto dark mode detection (fallback if no saved preference)
+        if (!localStorage.getItem('theme')) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateThemeIcon('dark');
+            }
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (!localStorage.getItem('theme')) {
+                const theme = event.matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+                updateThemeIcon(theme);
+            }
+        });
 
         async function displayMessage(message, isUser) {
             const msgElem = document.createElement('div');
             msgElem.textContent = message;
             msgElem.className = `chat-message ${isUser ? 'user-message' : 'assistant-message'}`;
             chatbox.appendChild(msgElem);
-            chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the bottom
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            if (typingIndicator) return; // Already showing
             
-            // For assistant messages, add a slight delay before displaying
-            if (!isUser) {
-                msgElem.style.opacity = 0; // Start with opacity 0
-                await new Promise(resolve => setTimeout(resolve, 300)); // Delay
-                msgElem.style.opacity = 1; // Fade in
+            typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing-indicator';
+            
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'typing-dots';
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                dotsContainer.appendChild(dot);
+            }
+            
+            typingIndicator.appendChild(dotsContainer);
+            chatbox.appendChild(typingIndicator);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            if (typingIndicator) {
+                typingIndicator.remove();
+                typingIndicator = null;
             }
         }
 
         async function callApi(apiUrl, prompt) {
-            chatInput.value = "Typing...";
-            chatInput.disabled = true;
+            showTypingIndicator();
             sendButton.disabled = true;
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({prompt})
-            });
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({prompt})
+                });
 
-            chatInput.value = "";
-            chatInput.disabled = false;
-            sendButton.disabled = false;
-            chatInput.focus();
-            return response.json();
+                const data = await response.json();
+                return data;
+            } finally {
+                hideTypingIndicator();
+                sendButton.disabled = false;
+                chatInput.focus();
+            }
         }
 
         chatInput.focus();
 
+        // Handle Enter key
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
         sendButton.addEventListener('click', async () => {
             const message = chatInput.value.trim();
-            if (!message) return;
+            if (!message || sendButton.disabled) return;
 
             displayMessage(message, true);
             chatInput.value = '';
@@ -194,9 +407,9 @@
                 } 
             } catch (error) {
                 console.error('Error:', error);
-displayMessage('An error occurred. Please try again.', false);
-}
-});
-</script> <
-/body> <
-/html>
+                displayMessage('An error occurred. Please try again.', false);
+            }
+        });
+    </script>
+</body>
+</html>
